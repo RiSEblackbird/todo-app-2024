@@ -1,0 +1,61 @@
+version: '3'
+services:
+  db:
+    image: mysql:8.0.30
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: todo_app_development
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    command: >
+      sh -c "
+        until mysql -h db -u root -prootpassword -e 'SELECT 1' &> /dev/null; do
+          echo 'Waiting for MySQL...'
+          sleep 1
+        done
+        echo 'MySQL is up - executing command'
+        rails db:create db:migrate
+        rails s -p 3005 -b '0.0.0.0'
+      "
+    volumes:
+      - ./backend:/app
+    ports:
+      - "3005:3005"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      RAILS_ENV: development
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3001:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
