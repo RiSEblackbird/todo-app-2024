@@ -1,69 +1,65 @@
-*.rbc
-capybara-*.html
-.rspec
-/db/*.sqlite3
-/db/*.sqlite3-journal
-/db/*.sqlite3-[0-9]*
-/public/system
-/coverage/
-/spec/tmp
-*.orig
-rerun.txt
-pickle-email-*.html
+# Ignore bundler config.
+/backend/.bundle
 
 # Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
+/backend/log/*
+/backend/tmp/*
+!/backend/log/.keep
+!/backend/tmp/.keep
 
-# TODO Comment out this rule if you are OK with secrets being uploaded to the repo
-config/initializers/secret_token.rb
-config/master.key
+# Ignore pidfiles, but keep the directory.
+/backend/tmp/pids/*
+!/backend/tmp/pids/
+!/backend/tmp/pids/.keep
 
-# Only include if you have production secrets in this file, which is no longer a Rails default
-# config/secrets.yml
+# Ignore uploaded files in development.
+/backend/storage/*
+!/backend/storage/.keep
+/backend/tmp/storage/*
+!/backend/tmp/storage/
+!/backend/tmp/storage/.keep
 
-# dotenv, dotenv-rails
-# TODO Comment out these rules if environment variables can be committed
-.env
-.env*.local
+# Ignore master key for decrypting credentials and more.
+/backend/config/master.key
 
-## Environment normalization:
-/.bundle
-/vendor/bundle
+# Ignore database configuration
+/backend/config/database.yml
 
-# these should all be checked in to normalize the environment:
-# Gemfile.lock, .ruby-version, .ruby-gemset
+# Ignore environment variables
+/backend/.env
 
-# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
-.rvmrc
+# Ignore coverage reports
+/backend/coverage
 
-# if using bower-rails ignore default bower_components path bower.json files
-/vendor/assets/bower_components
-*.bowerrc
-bower.json
+# Ignore RSpec examples status persistence file
+/backend/spec/examples.txt
 
-# Ignore pow environment settings
-.powenv
+# Ignore node modules
+/backend/node_modules
 
-# Ignore Byebug command history file.
-.byebug_history
+# Ignore yarn error log file
+/backend/yarn-error.log
 
-# Ignore node_modules
-node_modules/
+# Ignore precompiled assets
+/backend/public/assets
 
-# Ignore precompiled javascript packs
-/public/packs
-/public/packs-test
-/public/assets
+# Ignore macOS system files
+.DS_Store
 
-# Ignore yarn files
-/yarn-error.log
-yarn-debug.log*
-.yarn-integrity
+# Ignore editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Ignore uploaded files in development
-/storage/*
-!/storage/.keep
-/public/uploads
+# Ignore Ruby version manager files
+/backend/.ruby-version
+/backend/.ruby-gemset
+
+# Ignore byebug command history file
+/backend/.byebug_history
+
+# Ignore other common files
+*.log
+*.sql
+*.sqlite
