@@ -4,6 +4,8 @@
 
 `docker-compose down -v`
 
+- backendコンテナ再ビルド（起動中も実行可能）
+    - `docker-compose build backend`
 
 - Docker ネットワークを確認
     - `docker network ls`
@@ -27,6 +29,13 @@
 - プロセスを終了
     - `taskkill /PID <プロセスID> /F`
 
+- bundle installが正しく実行されたか確認
+    - `docker-compose run --rm backend bundle check`
+
+- rspecのインストール
+    - `docker-compose run --rm backend rails generate rspec:install`
+    - 最初のテストデータベース作成: `docker-compose run --rm backend rails db:test:prepare`
+    - 実行: `docker-compose run --rm test`
 ----------------
 
 - Reactのトップページ

@@ -54,6 +54,19 @@ services:
     networks:
       - app-network
 
+  test:
+    build: ./backend
+    command: bash -c "bundle install && bundle exec rspec"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      RAILS_ENV: test
+    networks:
+      - app-network
+
 volumes:
   mysql_data:
 
