@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchTasks } from './store/tasksSlice';
+import { Container, Typography, List, ListItem, ListItemText } from '@mui/material';
 
 function App() {
+  const dispatch = useDispatch();
+  const tasks = useSelector(state => state.tasks.items);
+  const taskStatus = useSelector(state => state.tasks.status);
+
+  useEffect(() => {
+    if (taskStatus === 'idle') {
+      dispatch(fetchTasks());
+    }
+  }, [taskStatus, dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Task Management
+      </Typography>
+      <List>
+        {tasks.map(task => (
+          <ListItem key={task.id}>
+            <ListItemText primary={task.title} secondary={task.description} />
+          </ListItem>
+        ))}
+      </List>
+    </Container>
   );
 }
 
