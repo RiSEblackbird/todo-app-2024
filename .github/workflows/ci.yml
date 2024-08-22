@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build and run docker-compose
+      run: |
+        docker-compose up -d
+        docker-compose ps
+
+    - name: Run backend tests
+      run: docker-compose run --rm test
+
+    - name: Run backend linter
+      run: docker-compose run --rm backend bundle exec rubocop
+
+    - name: Build frontend
+      run: docker-compose run --rm frontend npm run build
+
+    - name: Tear down docker-compose
+      run: docker-compose down
