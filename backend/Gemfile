@@ -41,6 +41,8 @@ group :development, :test do
 
   # RSpec for Rails
   gem 'rspec-rails', '~> 6.1.0'
+
+  gem 'rails-erd'
 end
 
 group :test do
