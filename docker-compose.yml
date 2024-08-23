@@ -25,6 +25,7 @@ services:
         done
         echo 'MySQL is up - executing command'
         rails db:create db:migrate
+        rails db:create db:migrate RAILS_ENV=test
         rails s -p 3005 -b '0.0.0.0'
       "
     volumes:
@@ -56,7 +57,16 @@ services:
 
   test:
     build: ./backend
-    command: bash -c "bundle install && bundle exec rspec"
+    command: >
+      sh -c "
+        until mysql -h db -u root -prootpassword -e 'SELECT 1' &> /dev/null; do
+          echo 'Waiting for MySQL...'
+          sleep 1
+        done
+        bundle install
+        rails db:create db:migrate RAILS_ENV=test
+        bundle exec rspec
+      "
     volumes:
       - ./backend:/app
     depends_on:
