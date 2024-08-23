@@ -1,8 +1,12 @@
 # todo-app-2024
- 
-`docker-compose up --build`
 
-`docker-compose down -v`
+- コンテナのビルドと起動
+    - `docker-compose up --build`
+
+- コンテナをダウン（通常時）
+    - `docker-compose down`
+- ボリュームごとコンテナをダウン
+    - `docker-compose down -v`
 
 - backendコンテナ再ビルド（起動中も実行可能）
     - `docker-compose build backend`
