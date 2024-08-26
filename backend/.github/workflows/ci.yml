@@ -24,20 +24,33 @@ jobs:
 
       - name: Set up database.yml for CI
         run: |
-          cat << EOL > backend/config/database.yml
+          cat << EOF > backend/config/database.yml
           default: &default
             adapter: mysql2
             encoding: utf8mb4
-            pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+            pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
             username: root
-            password:
+            password: rootpassword
             host: 127.0.0.1
             port: 3306
-          
+
           test:
             <<: *default
             database: todo_app_test
-          EOL
+          EOF
+
+      - name: Check database.yml content
+        run: |
+          cat backend/config/database.yml
+
+      - name: Install yamllint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yamllint
+
+      - name: Validate database.yml
+        run: |
+          yamllint backend/config/database.yml
 
       - name: Setup database
         env:
@@ -113,20 +126,37 @@ jobs:
 
       - name: Set up database.yml for CI
         run: |
-          cat << EOL > backend/config/database.yml
+          cat << EOF > backend/config/database.yml
           default: &default
             adapter: mysql2
             encoding: utf8mb4
-            pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+            pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
             username: root
             password: rootpassword
             host: 127.0.0.1
             port: 3306
-          
+
           test:
             <<: *default
             database: todo_app_test
-          EOL
+          EOF
+
+      - name: Check database.yml content
+        run: |
+          cat backend/config/database.yml
+
+      - name: Check database.yml content
+        run: |
+          cat backend/config/database.yml
+
+      - name: Install yamllint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yamllint
+
+      - name: Validate database.yml
+        run: |
+          yamllint backend/config/database.yml
 
       - name: Setup database
         env:
