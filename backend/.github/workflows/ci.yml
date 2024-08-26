@@ -128,6 +128,7 @@ jobs:
         env:
           RAILS_ENV: test
           DB_HOST: 127.0.0.1
+          DB_PORT: 3306
         run: |
           cd backend
           bundle exec rails db:create db:schema:load
@@ -136,6 +137,7 @@ jobs:
         env:
           RAILS_ENV: test
           DB_HOST: 127.0.0.1
+          DB_PORT: 3306
         run: |
           cd backend
           bundle exec rspec
