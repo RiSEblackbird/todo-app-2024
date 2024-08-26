@@ -30,6 +30,8 @@ jobs:
       env:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
+        sudo mkdir -p backend/config
+        sudo chown -R $USER:$USER backend/config
         echo "default: &default
           adapter: mysql2
           encoding: utf8mb4
