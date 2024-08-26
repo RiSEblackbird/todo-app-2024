@@ -63,8 +63,25 @@ services:
           echo 'Waiting for MySQL...'
           sleep 1
         done
-        bundle install
-        rails db:create db:migrate RAILS_ENV=test
+        pwd && 
+        ls -la /app/config &&
+        if [ ! -f /app/config/database.yml ]; then
+          echo 'Generating database.yml'
+          echo 'default: &default
+            adapter: mysql2
+            encoding: utf8mb4
+            pool: <%= ENV.fetch(\"RAILS_MAX_THREADS\") { 5 } %>
+            username: root
+            password: rootpassword
+            host: <%= ENV.fetch(\"DB_HOST\") { \"db\" } %>
+            port: 3306
+          
+          test:
+            <<: *default
+            database: todo_app_test' > /app/config/database.yml
+        fi &&
+        bundle install &&
+        rails db:create db:migrate RAILS_ENV=test &&
         bundle exec rspec
       "
     volumes:
