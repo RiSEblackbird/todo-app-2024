@@ -63,13 +63,11 @@ services:
     build: ./backend
     command: >
       sh -c "
+        cp config/database.yml.example config/database.yml
         until mysql -h db -u root -prootpassword -e 'SELECT 1' &> /dev/null; do
           echo 'Waiting for MySQL...'
           sleep 1
         done
-        if [ ! -f /app/config/database.yml ]; then
-          cp /app/config/database.yml.example /app/config/database.yml
-        fi
         bundle install
         RAILS_ENV=test rails db:create db:schema:load
         bundle exec rspec
