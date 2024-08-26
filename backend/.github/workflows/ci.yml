@@ -91,23 +91,15 @@ jobs:
 
     services:
       mysql:
-        image: mysql
+        image: mysql:8.0.30
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: todo_app_test
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-      # redis:
-      #   image: redis
-      #   ports:
-      #     - 6379:6379
-      #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
-      - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl default-mysql-client libjemalloc2 libvips
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -117,17 +109,33 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Set up database.yml for CI
+        run: |
+          echo "default: &default
+            adapter: mysql2
+            encoding: utf8mb4
+            pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+            username: root
+            password: rootpassword
+            host: 127.0.0.1
+            port: 3306
+          
+          test:
+            <<: *default
+            database: todo_app_test" > backend/config/database.yml
+
+      - name: Setup database
+        env:
+          RAILS_ENV: test
+          DB_HOST: 127.0.0.1
+        run: |
+          cd backend
+          bundle exec rails db:create db:schema:load
+
       - name: Run tests
         env:
           RAILS_ENV: test
-          DATABASE_URL: mysql2://127.0.0.1:3306
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
-
-      - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
-          if-no-files-found: ignore
+          DB_HOST: 127.0.0.1
+        run: |
+          cd backend
+          bundle exec rspec
