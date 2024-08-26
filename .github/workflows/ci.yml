@@ -26,14 +26,50 @@ jobs:
         docker-compose up -d
         docker-compose ps
 
+    - name: Create database.yml
+      env:
+        DB_PASSWORD: rootpassword
+      run: |
+        sudo mkdir -p backend/config
+        sudo chown -R $USER:$USER backend/config
+        echo "default: &default
+          adapter: mysql2
+          encoding: utf8mb4
+          pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+          username: root
+          password: ${DB_PASSWORD}
+          host: db
+        
+        test:
+          <<: *default
+          database: todo_app_test" > backend/config/database.yml
+
+    - name: Setup database
+      env:
+        RAILS_ENV: test
+        DB_PASSWORD: rootpassword
+      run: |
+        docker-compose run --rm -e RAILS_ENV=$RAILS_ENV -e DB_PASSWORD=$DB_PASSWORD backend rails db:create
+        docker-compose run --rm -e RAILS_ENV=$RAILS_ENV -e DB_PASSWORD=$DB_PASSWORD backend rails db:schema:load
+
     - name: Run backend tests
-      run: docker-compose run --rm test
+      env:
+        RAILS_ENV: test
+        DB_PASSWORD: rootpassword
+      run: docker-compose run --rm -e RAILS_ENV=$RAILS_ENV -e DB_PASSWORD=$DB_PASSWORD test
 
     - name: Run backend linter
       run: docker-compose run --rm backend bundle exec rubocop
 
+    - name: Run security scan
+      run: |
+        docker-compose run --rm backend bundle exec brakeman
+
     - name: Build frontend
       run: docker-compose run --rm frontend npm run build
+
+    - name: Run frontend security audit
+      run: docker-compose run --rm frontend npm audit
 
     - name: Tear down docker-compose
       run: docker-compose down

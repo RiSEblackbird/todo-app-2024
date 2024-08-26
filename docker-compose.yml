@@ -24,6 +24,10 @@ services:
           sleep 1
         done
         echo 'MySQL is up - executing command'
+        if [ ! -f /app/config/database.yml ]; then
+          cp /app/config/database.yml.example /app/config/database.yml
+        fi
+        bundle install
         rails db:create db:migrate
         rails db:create db:migrate RAILS_ENV=test
         rails s -p 3005 -b '0.0.0.0'
@@ -59,12 +63,13 @@ services:
     build: ./backend
     command: >
       sh -c "
+        cp config/database.yml.example config/database.yml
         until mysql -h db -u root -prootpassword -e 'SELECT 1' &> /dev/null; do
           echo 'Waiting for MySQL...'
           sleep 1
         done
         bundle install
-        rails db:create db:migrate RAILS_ENV=test
+        RAILS_ENV=test rails db:create db:schema:load
         bundle exec rspec
       "
     volumes:
