@@ -28,7 +28,7 @@ jobs:
 
     - name: Create database.yml
       env:
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_PASSWORD: rootpassword
       run: |
         sudo mkdir -p backend/config
         sudo chown -R $USER:$USER backend/config
@@ -45,12 +45,18 @@ jobs:
           database: todo_app_test" > backend/config/database.yml
 
     - name: Setup database
+      env:
+        RAILS_ENV: test
+        DB_PASSWORD: rootpassword
       run: |
-        docker-compose run --rm backend rails db:create RAILS_ENV=test
-        docker-compose run --rm backend rails db:schema:load RAILS_ENV=test
+        docker-compose run --rm -e RAILS_ENV=$RAILS_ENV -e DB_PASSWORD=$DB_PASSWORD backend rails db:create
+        docker-compose run --rm -e RAILS_ENV=$RAILS_ENV -e DB_PASSWORD=$DB_PASSWORD backend rails db:schema:load
 
     - name: Run backend tests
-      run: docker-compose run --rm test
+      env:
+        RAILS_ENV: test
+        DB_PASSWORD: rootpassword
+      run: docker-compose run --rm -e RAILS_ENV=$RAILS_ENV -e DB_PASSWORD=$DB_PASSWORD test
 
     - name: Run backend linter
       run: docker-compose run --rm backend bundle exec rubocop
