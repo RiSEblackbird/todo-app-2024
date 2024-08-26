@@ -22,6 +22,39 @@ jobs:
       - name: Scan for common Rails security vulnerabilities using static analysis
         run: bin/brakeman --no-pager
 
+      - name: Set up database.yml for CI
+        run: |
+          echo "default: &default
+            adapter: mysql2
+            encoding: utf8mb4
+            pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+            username: root
+            password:
+            host: 127.0.0.1
+            port: 3306
+          
+          test:
+            <<: *default
+            database: todo_app_test" > backend/config/database.yml
+
+      - name: Setup database
+        env:
+          RAILS_ENV: test
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: 3306
+        run: |
+          cd backend
+          bundle exec rails db:create db:schema:load
+
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: 3306
+        run: |
+          cd backend
+          bundle exec rspec
+
   scan_js:
     runs-on: ubuntu-latest
 
